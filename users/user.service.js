@@ -1,7 +1,7 @@
 ﻿const config = require("../config.json");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const User = require('./users.controller.js');
+const User = require('./user.model');
 
 module.exports = {
     authenticate,
@@ -10,6 +10,7 @@ module.exports = {
     create,
     update,
     delete: _delete,
+    add_to_cart
 };
 
 async function authenticate({ username, password }) {
@@ -80,19 +81,19 @@ async function _delete(id) {
 async function add_to_cart(id, array_id, product) {
     const user = await User.findById(id);
     UpdatedUser = user;
-    if (len(user.carts) > array_id) {
+    if (user.carts.length > array_id) {
         index = user.carts[array_id].findIndex((x) => x.name === product.name);
         if (index != -1) {
             UpdatedUser.carts[array_id][index] = product;
         } else {
             UpdatedUser.carts[array_id].push(product);
         }
-    } else if (len(user.carts) == array_id) {
-        UpdatedUser.carts.push([]);
-        UpdatedUser.carts[array_id].push(product);
+    } else if (user.carts.length == array_id) {
+        UpdatedUser.carts.push([product]);
     } else {
         throw "Array_Id too large";
     }
+    console.log(UpdatedUser.carts.array_id);
     Object.assign(user, UpdatedUser);
     await user.save();
 }

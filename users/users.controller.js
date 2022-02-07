@@ -71,7 +71,7 @@ function _delete(req, res, next) {
 
 function Add_To_Cart(req, res, next) {
     userService
-        .getById(req.user.sub, res.params.arrayid, res.body)
-        .then(() => res.json({}))
+        .add_to_cart(req.user.sub, req.params.arrayid, req.body)
+        .then(() => res.json(req.body))
         .catch((err) => next(err));
 }
