@@ -11,7 +11,7 @@ router.get("/:id", getById);
 router.put("/:id", update);
 router.delete("/:id", _delete);
 router.post("/:arrayid", Add_To_Cart);
-
+router.get("/checkout/:arrayid", Checkout)
 module.exports = router;
 
 function authenticate(req, res, next) {
@@ -65,6 +65,13 @@ function update(req, res, next) {
 function _delete(req, res, next) {
     userService
         .delete(req.params.id)
+        .then(() => res.json({}))
+        .catch((err) => next(err));
+}
+
+function Checkout(req,res, next) {
+    userService
+        .checkout(req.user.sub, req.params.arrayid)
         .then(() => res.json({}))
         .catch((err) => next(err));
 }

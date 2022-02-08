@@ -1,8 +1,9 @@
 ﻿const config = require("../config.json");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const User = require('./user.model');
-
+const User = require("./user.model");
+const Products = require("../products/product.model");
+const ProductService = require("../products/product.service");
 module.exports = {
     authenticate,
     getAll,
@@ -10,7 +11,8 @@ module.exports = {
     create,
     update,
     delete: _delete,
-    add_to_cart
+    add_to_cart,
+    checkout
 };
 
 async function authenticate({ username, password }) {
@@ -81,9 +83,14 @@ async function _delete(id) {
 async function add_to_cart(id, array_id, product) {
     const user = await User.findById(id);
     UpdatedUser = user;
+    if ((await Products.findById(product.id)).quantity < product.quantity) {
+        throw "Quantity unavailable";
+    }
+    ProductService.reduceQuantity(product.id, product.quantity);
     if (user.carts.length > array_id) {
-        index = user.carts[array_id].findIndex((x) => x.name === product.name);
+        index = user.carts[array_id].findIndex((x) => x.id === product.id);
         if (index != -1) {
+            product.quantity= product.quantity + UpdatedUser.carts[array_id][index].quantity; 
             UpdatedUser.carts[array_id][index] = product;
         } else {
             UpdatedUser.carts[array_id].push(product);
@@ -93,7 +100,19 @@ async function add_to_cart(id, array_id, product) {
     } else {
         throw "Array_Id too large";
     }
-    console.log(UpdatedUser.carts.array_id);
+    Object.assign(user, UpdatedUser);
+    await user.save();
+}
+
+async function checkout(id, array_id) {
+    const user = await User.findById(id);
+    UpdatedUser = user;
+    
+    if (user.carts.length > array_id) {
+        UpdatedUser.carts[array_id]=[];
+    } else {
+        throw "Array_Id too large";
+    }
     Object.assign(user, UpdatedUser);
     await user.save();
 }

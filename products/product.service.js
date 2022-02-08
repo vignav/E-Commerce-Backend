@@ -6,6 +6,7 @@ module.exports = {
     getByName,
     create,
     delete: _delete,
+    reduceQuantity
 };
 
 async function getAll() {
@@ -14,6 +15,18 @@ async function getAll() {
 
 async function getByName(product_name) {
     return await Product.find({ name: product_name });
+}
+
+async function getById(id) {
+    return await Product.findById(id);
+}
+
+async function reduceQuantity(id, reduce_quantity) {
+    const product = await Product.findById(id);
+    const Finalquantity = product.quantity - reduce_quantity;
+    Object.assign(product, {quantity: Finalquantity});
+    console.log("yes");
+    await product.save();
 }
 
 async function create(product) {
