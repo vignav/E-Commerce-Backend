@@ -4,6 +4,8 @@ const Product = require("./product.model");
 module.exports = {
     getAll,
     getByName,
+    getByTag,
+    getById,
     create,
     delete: _delete,
     reduceQuantity
@@ -16,6 +18,12 @@ async function getAll() {
 async function getByName(product_name) {
     return await Product.find({ name: product_name });
 }
+
+async function getByTag(product_tag) {
+    console.log("wow");
+    return await Product.find({ tags: product_tag });
+}
+
 
 async function getById(id) {
     return await Product.findById(id);
@@ -41,6 +49,6 @@ async function create(product) {
     await new_product.save();
 }
 
-async function _delete(product_name) {
-    await Product.findOne({ name: product_name });
+async function _delete(productId) {
+    await Product.deleteOne({_id:productId});
 }
