@@ -7,6 +7,6 @@ basic auth and shopping api .
 user must register at /users/register endpoint 
 then authenticate at /users/authenticate endpoint
 
-must be admin to be able to add or remove products
-Quick note:</br>
+must be admin to be able to add or remove products</br>
+Quick note:
 to remove products from carts use POST method on add to cart with negative vaule for quantity 
